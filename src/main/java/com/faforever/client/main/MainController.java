@@ -58,6 +58,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Popup;
@@ -72,6 +78,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -329,7 +336,7 @@ public class MainController implements Controller<Node> {
     eventBus.post(UpdateApplicationBadgeEvent.ofNewValue(0));
 
     Stage stage = StageHolder.getStage();
-
+    setBackgroundImage(preferencesService.getPreferences().getMainWindow().backgroundImagePathProperty().getValue());
     mainScene = uiService.createScene(stage, mainRoot);
     stage.setScene(mainScene);
 
@@ -422,6 +429,27 @@ public class MainController implements Controller<Node> {
         preferencesService.storeInBackground();
       }
     });
+    JavaFxUtil.addListener(mainWindowPrefs.backgroundImagePathProperty(), observable -> {
+      setBackgroundImage(mainWindowPrefs.backgroundImagePathProperty().getValue());
+    });
+  }
+
+  private void setBackgroundImage(String filepath) {
+    Image image;
+    if (filepath == null || filepath.isEmpty()) {
+      image = new Image(uiService.getThemeFile("theme/images/login-background.jpg"));
+    } else {
+      File file = new File(filepath);
+      image = noCatch(() -> new Image(file.toURI().toURL().toExternalForm()));
+    }
+    mainRoot.setBackground(new Background(new BackgroundImage(
+        image,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundPosition.CENTER,
+        BackgroundSize.DEFAULT
+    )));
+
   }
 
   private void enterLoggedInState() {

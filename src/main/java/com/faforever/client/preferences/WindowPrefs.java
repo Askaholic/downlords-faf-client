@@ -22,6 +22,7 @@ public class WindowPrefs {
   private final MapProperty<String, String> lastChildViews;
   private final DoubleProperty x;
   private final DoubleProperty y;
+  private final StringProperty backgroundImagePath;
 
   public WindowPrefs() {
     this.width = new SimpleIntegerProperty(800);
@@ -31,6 +32,7 @@ public class WindowPrefs {
     maximized = new SimpleBooleanProperty();
     lastView = new SimpleStringProperty();
     lastChildViews = new SimpleMapProperty<>(FXCollections.observableHashMap());
+    backgroundImagePath = new SimpleStringProperty();
   }
 
   public int getWidth() {
@@ -115,5 +117,13 @@ public class WindowPrefs {
 
   public MapProperty<String, String> lastChildViewsProperty() {
     return lastChildViews;
+  }
+
+  public StringProperty backgroundImagePathProperty() {
+    return backgroundImagePath;
+  }
+
+  public void setBackgroundImagePath(String path) {
+    this.backgroundImagePath.setValue(path);
   }
 }
